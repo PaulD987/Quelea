@@ -41,6 +41,9 @@ import org.quelea.services.utils.LoggerUtils;
 import org.quelea.services.utils.QueleaProperties;
 import org.quelea.services.utils.Utils;
 import org.quelea.windows.main.widgets.LogoImage;
+import com.walker.devolay.DevolaySender;
+import com.walker.devolay.DevolayVideoFrame;
+import com.walker.devolay.DevolayFrameFourCCType;
 
 /**
  * The canvas where the lyrics / images / media are drawn.
@@ -56,6 +59,7 @@ public class DisplayCanvas extends StackPane {
     private boolean logoUsed;
     private final NoticeDrawer noticeDrawer;
     private final boolean stageView;
+    private final boolean ndiView;
     private Node background;
     private final LogoImage logoImage;
     private final Rectangle black = new Rectangle();
@@ -65,6 +69,9 @@ public class DisplayCanvas extends StackPane {
     private Priority drawingPriority = Priority.LOW;
     private final boolean playVideo;
 
+    private DevolayVideoFrame videoFrame = null;
+    private DevolaySender sender = null;
+
     public enum Type {
 
         STAGE,
@@ -73,10 +80,10 @@ public class DisplayCanvas extends StackPane {
     }
 
     public enum Priority {
-
-        HIGH(0),
-        MID(1),
-        LOW(2);
+        VHIGH(0),
+        HIGH(1),
+        MID(2),
+        LOW(3);
         private final int priority;
 
         private Priority(int priority) {
@@ -103,9 +110,26 @@ public class DisplayCanvas extends StackPane {
      *                        updating.
      */
     public DisplayCanvas(boolean showBorder, boolean stageView, boolean playVideo, final CanvasUpdater updater, Priority drawingPriority) {
+        this(showBorder, stageView, playVideo, false, updater, drawingPriority);
+    }
+
+    public DisplayCanvas(boolean showBorder, boolean stageView, boolean playVideo, boolean ndiView, final CanvasUpdater updater, Priority drawingPriority) {
         setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
         this.playVideo = playVideo;
         this.stageView = stageView;
+        this.ndiView = ndiView;
+        if( ndiView ){
+            // Create the sender using the default settings, other than setting a name for the source.
+            String NDIName;
+            NDIName = "Quelea";
+
+            sender = new DevolaySender(NDIName);
+            videoFrame = new DevolayVideoFrame();
+
+            videoFrame.setResolution((int)getWidth(), (int)getHeight());
+            videoFrame.setFourCCType(DevolayFrameFourCCType.BGRA);
+
+        }
         this.drawingPriority = drawingPriority;
         setMinHeight(0);
         setMinWidth(0);
@@ -123,14 +147,19 @@ public class DisplayCanvas extends StackPane {
                 updateCanvas(updater);
             }
         });
-        getChildren().add(background);
+
+        if( !ndiView ) {
+            getChildren().add(background);
+        }
 
         black.setFill(Color.BLACK);
         black.widthProperty().bind(this.widthProperty());
         black.heightProperty().bind(this.heightProperty());
         black.setOpacity(0);
         black.setCache(true);
-        getChildren().add(black);
+        if( !ndiView ) {
+            getChildren().add(black);
+        }
 
         logoImage = new LogoImage(stageView);
 
@@ -140,7 +169,9 @@ public class DisplayCanvas extends StackPane {
         logoImage.maxHeightProperty().bind(heightProperty());
         logoImage.setOpacity(0);
         logoImage.setCache(true);
-        getChildren().add(logoImage);
+        if( !ndiView ) {
+            getChildren().add(logoImage);
+        }
 
         if (stageView) {
             black.setFill(QueleaProperties.get().getStageBackgroundColor());
@@ -186,7 +217,9 @@ public class DisplayCanvas extends StackPane {
             }
         };
         noticeOverlay.setCache(true);
-        getChildren().add(noticeOverlay);
+        if( !ndiView ) {
+            getChildren().add(noticeOverlay);
+        }
     }
 
     public final boolean getPlayVideo() {
@@ -301,6 +334,16 @@ public class DisplayCanvas extends StackPane {
      */
     public boolean isStageView() {
         return stageView;
+    }
+
+    /**
+     * Determine if this canvas is part of a NDI view.
+     * <p/>
+     *
+     * @return true if its a NDI view, false otherwise.
+     */
+    public boolean isNdiView() {
+        return ndiView;
     }
 
     public void update() {
@@ -441,5 +484,12 @@ public class DisplayCanvas extends StackPane {
         if (noticeOverlay != null) {
             noticeOverlay.setMouseTransparent(clickable);
         }
+    }
+
+    public DevolayVideoFrame getNDIVideoFrame(){
+        return videoFrame;
+    }
+    public DevolaySender getNDISender(){
+        return sender;
     }
 }

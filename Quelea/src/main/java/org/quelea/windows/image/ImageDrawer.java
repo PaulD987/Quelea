@@ -58,14 +58,18 @@ public class ImageDrawer extends DisplayableDrawer {
         StackPane imageBox = new StackPane();
         imageBox.getChildren().add(imageView);
         if(getCanvas() != QueleaApp.get().getProjectionWindow().getCanvas()
-                && getCanvas() != QueleaApp.get().getStageWindow().getCanvas()) {
+                && getCanvas() != QueleaApp.get().getStageWindow().getCanvas()
+                && !getCanvas().isNdiView()) {
             imageBox.setStyle("-fx-background-color:#dddddd;");
+        } else if( getCanvas().isNdiView() ) {
+            imageBox.setStyle("-fx-background-color:#000000;");
         }
         imageBox.setVisible(false);
         getCanvas().getChildren().add(imageBox);
         getCanvas().pushLogoNoticeToFront();
         imageBox.setVisible(true);
         getCanvas().setOpacity(1);
+        sendNDISnapshot();
     }
 
     @Override

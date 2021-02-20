@@ -49,6 +49,7 @@ import org.quelea.utils.DesktopApi;
 import org.quelea.windows.multimedia.VLCWindow;
 import org.quelea.windows.splash.SplashStage;
 import org.quelea.utils.VLCDiscovery;
+import com.walker.devolay.Devolay;
 
 /**
  * The main class, sets everything in motion...
@@ -61,7 +62,9 @@ public final class Main extends Application {
     private MainWindow mainWindow;
     private DisplayStage fullScreenWindow;
     private DisplayStage stageWindow;
+    private DisplayStage ndiWindow;
     private Dialog vlcWarningDialog;
+    private boolean ndiAvailable;
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -113,6 +116,22 @@ public final class Main extends Application {
                     } else {
                         VLC_INIT = false;
                     }
+
+                    // Check to see if NDI output is enabled. If not, we don't bother attempting to load the NDI libraries
+                    if( QueleaProperties.get().getEnableNDIOutput() ) {
+                        try {
+                            LOGGER.log(Level.INFO, "NDI output enabled, loading libraries");
+                            Devolay.loadLibraries();
+                            ndiAvailable = true;
+                        } catch( Throwable error ){
+                            LOGGER.log(Level.SEVERE, "Failed to load NDI libraries", error.getMessage());
+                            ndiAvailable = false;
+                        }
+                    } else {
+                        LOGGER.log(Level.INFO, "NDI output disabled, not loading libraries");
+                        ndiAvailable = false;
+                    }
+
                     new FontInstaller().setupBundledFonts();
                     new UserFileChecker(QueleaProperties.get().getQueleaUserHome()).checkUserFiles();
 
@@ -181,6 +200,14 @@ public final class Main extends Application {
                         System.setProperty("http.proxyUser", QueleaProperties.get().getWebProxyUser());
                         System.setProperty("http.proxyPassword", QueleaProperties.get().getWebProxyPassword());
                     }
+
+                    if( ndiAvailable ) {
+                        Platform.runLater(() -> {
+                            ndiWindow = new DisplayStage(QueleaProperties.get().getNDICoords(), false, true);
+                            QueleaApp.get().setNDIWindow(ndiWindow);
+                        });
+                    }
+
                     if (lyricsHidden) {
                         LOGGER.log(Level.INFO, "Hiding projector display on monitor 0 (base 0!)");
                         Platform.runLater(() -> {
@@ -195,7 +222,7 @@ public final class Main extends Application {
                     } else {
                         LOGGER.log(Level.INFO, "Starting projector display on monitor {0} (base 0!)", projectorScreen);
                         Platform.runLater(() -> {
-                            fullScreenWindow = new DisplayStage(Utils.getBoundsFromRect2D(monitors.get(projectorScreen).getBounds()), false);
+                            fullScreenWindow = new DisplayStage(Utils.getBoundsFromRect2D(monitors.get(projectorScreen).getBounds()), false, false);
                             fullScreenWindow.setFullScreenAlwaysOnTop(true);
                         });
                     }
@@ -263,6 +290,12 @@ public final class Main extends Application {
                             stageWindow.hide();
                         } else {
                             stageWindow.show();
+                        }
+
+                        if( ndiAvailable ) {
+                            mainWindow.getMainPanel().getLivePanel().registerDisplayCanvas(ndiWindow.getCanvas());
+                            mainWindow.getMainPanel().getLivePanel().registerDisplayWindow(ndiWindow);
+                            ndiWindow.hide();
                         }
                     });
 

@@ -20,6 +20,7 @@ package org.quelea.windows.options;
 import com.dlsc.preferencesfx.model.Setting;
 import com.dlsc.preferencesfx.util.StorageHandler;
 import com.google.gson.Gson;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import org.javafx.dialog.Dialog;
 import org.quelea.services.languages.LabelGrabber;
@@ -27,6 +28,7 @@ import org.quelea.services.languages.LanguageFile;
 import org.quelea.services.languages.LanguageFileManager;
 import org.quelea.services.utils.QueleaProperties;
 import org.quelea.services.utils.QueleaPropertyKeys;
+import org.quelea.windows.main.DisplayStage;
 import org.quelea.windows.main.QueleaApp;
 
 import java.util.prefs.BackingStoreException;
@@ -294,7 +296,14 @@ public class PreferenceStorageHandler implements StorageHandler {
             case QueleaPropertyKeys.defaultSongDbUpdateKey:
                 QueleaProperties.get().setDefaultSongDBUpdate(!Boolean.parseBoolean(object.toString()));
                 break;
-            default:
+            case QueleaPropertyKeys.enableNDIOutputKey:
+            case QueleaPropertyKeys.ndiDimensionsKey:
+                if (QueleaProperties.get().getProperty(breadcrumb) != null && !QueleaProperties.get().getProperty(breadcrumb).equals(object.toString())) {
+                    Dialog.showInfo(LabelGrabber.INSTANCE.getLabel("ndi.changed.label"), LabelGrabber.INSTANCE.getLabel("ndi.changed.message"), QueleaApp.get().getMainWindow());
+                }
+                QueleaProperties.get().setProperty(breadcrumb, object.toString());
+                break;
+             default:
                 QueleaProperties.get().setProperty(breadcrumb, object.toString());
         }
     }

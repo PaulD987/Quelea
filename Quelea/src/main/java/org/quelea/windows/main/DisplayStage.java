@@ -63,15 +63,25 @@ public class DisplayStage extends Stage {
      * @param stageView true if the display stage is a stage view, false if it's
      * a normal projection view.
      */
-    public DisplayStage(Bounds area, boolean stageView) {
+
+    public DisplayStage(Bounds area, boolean stageView){
+        this(area, stageView, false);
+    }
+
+    public DisplayStage(Bounds area, boolean stageView, boolean ndiView) {
         final boolean playVideo = !stageView;
+
+        Priority priority = stageView ? Priority.HIGH : Priority.MID;
+        if( ndiView )
+            priority = Priority.VHIGH;
+
         initStyle(StageStyle.TRANSPARENT);
         Utils.addIconsToStage(this);
         setTitle(LabelGrabber.INSTANCE.getLabel("projection.window.title"));
         setAreaImmediate(area);
         StackPane scenePane = new StackPane();
         scenePane.setStyle("-fx-background-color: transparent;");
-        canvas = new DisplayCanvas(true, stageView, playVideo, null, stageView ? Priority.HIGH : Priority.MID);
+        canvas = new DisplayCanvas(true, stageView, playVideo, ndiView,null, priority);
         canvas.setCursor(BLANK_CURSOR);
         scenePane.getChildren().add(canvas);
         if (stageView) {

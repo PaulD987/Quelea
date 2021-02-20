@@ -46,6 +46,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.quelea.services.languages.LabelGrabber;
 import org.quelea.services.utils.QueleaProperties;
+import org.quelea.services.utils.QueleaPropertyKeys;
 import org.quelea.services.utils.Utils;
 import org.quelea.windows.main.DisplayStage;
 import org.quelea.windows.main.QueleaApp;
@@ -67,6 +68,7 @@ public class PreferencesDialog extends Stage {
     private final OptionsServerSettingsPanel optionsServerSettingsPanel;
     private final OptionsRecordingPanel recordingPanel;
     private final OptionsImportExportPanel importExportPanel;
+    private final OptionsNDIPanel ndiPanel;
     private HashMap<Field, ObservableValue> bindings = new HashMap<>();
 
     /**
@@ -84,6 +86,7 @@ public class PreferencesDialog extends Stage {
         generalPanel = new OptionsGeneralPanel(bindings);
         displayPanel = new OptionsDisplaySetupPanel(bindings);
         stageViewPanel = new OptionsStageViewPanel(bindings);
+        ndiPanel = new OptionsNDIPanel(bindings);
         noticePanel = new OptionsNoticePanel(bindings);
         presentationPanel = new OptionsPresentationPanel(bindings);
         biblePanel = new OptionsBiblePanel(bindings);
@@ -96,6 +99,7 @@ public class PreferencesDialog extends Stage {
                         generalPanel.getGeneralTab(),
                         displayPanel.getDisplaySetupTab(),
                         stageViewPanel.getStageViewTab(),
+                        ndiPanel.getNDITab(),
                         noticePanel.getNoticesTab(),
                         presentationPanel.getPresentationsTab(),
                         biblePanel.getBiblesTab(),
@@ -163,6 +167,7 @@ public class PreferencesDialog extends Stage {
     public void updatePos() {
         DisplayStage appWindow = QueleaApp.get().getProjectionWindow();
         DisplayStage stageWindow = QueleaApp.get().getStageWindow();
+
         if (appWindow == null) {
             appWindow = new DisplayStage(QueleaProperties.get().getProjectorCoords(), false);
         }

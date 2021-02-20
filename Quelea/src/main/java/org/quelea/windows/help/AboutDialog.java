@@ -84,6 +84,10 @@ public class AboutDialog extends Stage {
         text2.getStyleClass().add("text");
         subLayout.getChildren().add(text2);
         subLayout.getChildren().add(new Text(" "));
+        Text ndiText = new Text(LabelGrabber.INSTANCE.getLabel("ndi.trademark.text"));
+        ndiText.getStyleClass().add("text");
+        subLayout.getChildren().add(ndiText);
+        subLayout.getChildren().add(new Text(" "));
         subLayout.getChildren().add(new Label("Java: " + System.getProperty("java.version")));
         HBox debugBox = new HBox(5);
         debugBox.getChildren().add(new Label(LabelGrabber.INSTANCE.getLabel("debug.location") + ":"));

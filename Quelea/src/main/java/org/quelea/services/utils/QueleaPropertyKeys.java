@@ -130,5 +130,7 @@ public class QueleaPropertyKeys {
     public static final String useSlideTransitionKey = "use.fade";
     public static final String slideTransitionInDurationKey = "slide.transition.duration.in";
     public static final String slideTransitionOutDurationKey = "slide.transition.duration.out";
+    public static final String enableNDIOutputKey = "ndi.enable.output";
+    public static final String ndiDimensionsKey = "ndi.dimensions";
 
 }

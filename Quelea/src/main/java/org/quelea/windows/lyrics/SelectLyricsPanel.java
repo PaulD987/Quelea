@@ -53,6 +53,7 @@ public class SelectLyricsPanel extends AbstractPanel {
     private final DisplayCanvas previewCanvas;
     private final SplitPane splitPane;
     private final LyricDrawer lyricDrawer;
+    private final LyricDrawer ndiLyricDrawer;
     private final StageDrawer stageDrawer;
 
     /**
@@ -62,6 +63,7 @@ public class SelectLyricsPanel extends AbstractPanel {
      */
     public SelectLyricsPanel(LivePreviewPanel containerPanel) {
         lyricDrawer = new LyricDrawer();
+        ndiLyricDrawer = new LyricDrawer();
         stageDrawer = new StageDrawer();
         splitPane = new SplitPane();
         splitPane.setOrientation(Orientation.VERTICAL);
@@ -78,7 +80,6 @@ public class SelectLyricsPanel extends AbstractPanel {
         lyricsList.itemsProperty().addListener((ov, t1, t2) -> {
             updateCanvas();
         });
-//        
     }
 
     public void selectFirst() {
@@ -230,6 +231,8 @@ public class SelectLyricsPanel extends AbstractPanel {
             WordDrawer drawer;
             if (canvas.isStageView()) {
                 drawer = stageDrawer;
+            } else if(canvas.isNdiView()) {
+                drawer = ndiLyricDrawer;
             } else {
                 drawer = lyricDrawer;
             }
@@ -265,6 +268,8 @@ public class SelectLyricsPanel extends AbstractPanel {
     public DisplayableDrawer getDrawer(DisplayCanvas canvas) {
         if (canvas.isStageView()) {
             return stageDrawer;
+        } else if(canvas.isNdiView()) {
+            return ndiLyricDrawer;
         } else {
             return lyricDrawer;
         }

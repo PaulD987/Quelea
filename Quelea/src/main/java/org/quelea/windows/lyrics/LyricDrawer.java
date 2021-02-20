@@ -98,7 +98,9 @@ public class LyricDrawer extends WordDrawer {
         if (getCanvas().getCanvasBackground() != null) {
             if (!getCanvas().getChildren().contains(getCanvas().getCanvasBackground())
                     && !getCanvas().getChildren().contains(textGroup) && !getCanvas().getChildren().contains(smallTextGroup)) {
-                getCanvas().getChildren().add(0, getCanvas().getCanvasBackground());
+                if( !getCanvas().isNdiView() ) {
+                    getCanvas().getChildren().add(0, getCanvas().getCanvasBackground());
+                }
                 getCanvas().getChildren().add(textGroup);
                 getCanvas().getChildren().add(smallTextGroup);
             }
@@ -309,28 +311,41 @@ public class LyricDrawer extends WordDrawer {
         StackPane.setAlignment(textGroup, DisplayPositionSelector.getPosFromIndex(theme.getTextPosition()));
 
         StackPane.setMargin(smallTextGroup, new Insets(5));
-
+        
         if (getCanvas().isCleared() && !getLastClearedState()) {
             setLastClearedState(true);
-            FadeTransition t = new FadeTransition(Duration.millis(QueleaProperties.get().getClearFadeDuration()), textGroup);
-            FadeTransition t2 = new FadeTransition(Duration.millis(QueleaProperties.get().getClearFadeDuration()), smallTextGroup);
-            t.setToValue(0);
-            t.play();
-            t2.setToValue(0);
-            t2.play();
+            if( !getCanvas().isNdiView() ) {
+                FadeTransition t = new FadeTransition(Duration.millis(QueleaProperties.get().getClearFadeDuration()), textGroup);
+                FadeTransition t2 = new FadeTransition(Duration.millis(QueleaProperties.get().getClearFadeDuration()), smallTextGroup);
+                t.setToValue(0);
+                t.play();
+                t2.setToValue(0);
+                t2.play();
+            } else {
+                textGroup.setOpacity(0);
+                smallTextGroup.setOpacity(0);
+                sendNDISnapshot();
+            }
         } else if (getCanvas().isCleared()) {
             textGroup.setOpacity(0);
             smallTextGroup.setOpacity(0);
+            sendNDISnapshot();
         } else if (!getCanvas().isCleared() && getLastClearedState()) {
             setLastClearedState(false);
-            FadeTransition t = new FadeTransition(Duration.millis(QueleaProperties.get().getClearFadeDuration()), textGroup);
-            FadeTransition t2 = new FadeTransition(Duration.millis(QueleaProperties.get().getClearFadeDuration()), smallTextGroup);
-            t.setFromValue(0);
-            t.setToValue(1);
-            t.play();
-            t2.setFromValue(0);
-            t2.setToValue(1);
-            t2.play();
+            if( !getCanvas().isNdiView() ) {
+                FadeTransition t = new FadeTransition(Duration.millis(QueleaProperties.get().getClearFadeDuration()), textGroup);
+                FadeTransition t2 = new FadeTransition(Duration.millis(QueleaProperties.get().getClearFadeDuration()), smallTextGroup);
+                t.setFromValue(0);
+                t.setToValue(1);
+                t.play();
+                t2.setFromValue(0);
+                t2.setToValue(1);
+                t2.play();
+            } else {
+                textGroup.setOpacity(1);
+                smallTextGroup.setOpacity(1);
+                sendNDISnapshot();
+            }
         } else if (QueleaProperties.get().getUseSlideTransition()
                 && !getCanvas().isBlacked() && !getCanvas().isCleared()
                 && !getCanvas().isShowingLogo()
@@ -344,6 +359,7 @@ public class LyricDrawer extends WordDrawer {
                         getCanvas().getChildren().remove(oldTextGroup);
                         oldTextGroup = null;
                     }
+                    //sendNDISnapshot();
                 });
                 getCanvas().getChildren().add(oldTextGroup);
                 fadeOut.play();
@@ -352,8 +368,15 @@ public class LyricDrawer extends WordDrawer {
                 FadeTransition fadeIn = new FadeTransition(Duration.millis(QueleaProperties.get().getSlideTransitionInDuration()), textGroup);
                 fadeIn.setFromValue(0.0);
                 fadeIn.setToValue(1.0);
+                fadeIn.setOnFinished(e -> {
+                    sendNDISnapshot();
+                });
                 fadeIn.play();
+
             }
+        }
+        else if( getCanvas().isNdiView() ) {
+            sendNDISnapshot();
         }
     }
 
@@ -421,7 +444,7 @@ public class LyricDrawer extends WordDrawer {
             image = Utils.getImageFromColour(ThemeDTO.DEFAULT_BACKGROUND.getColour());
         }
 
-        Node newBackground;
+        Node newBackground = null;
         if (image == null) {
             final VideoBackground vidBackground = (VideoBackground) theme.getBackground();
             if (!sameVid || !VLCWindow.INSTANCE.isPlaying()) {
@@ -453,12 +476,16 @@ public class LyricDrawer extends WordDrawer {
             if (colourAdjust != null) {
                 newImageView.setEffect(colourAdjust);
             }
-            getCanvas().getChildren().add(newImageView);
-            newBackground = newImageView;
+            if( !getCanvas().isNdiView() ) {
+                getCanvas().getChildren().add(newImageView);
+                newBackground = newImageView;
+            }
         }
         getCanvas().getChildren().remove(getCanvas().getCanvasBackground());
-        getCanvas().setOpacity(1);
-        getCanvas().setCanvasBackground(newBackground);
+        if( !getCanvas().isNdiView() ) {
+            getCanvas().setOpacity(1);
+            getCanvas().setCanvasBackground(newBackground);
+        }
     }
 
     /**

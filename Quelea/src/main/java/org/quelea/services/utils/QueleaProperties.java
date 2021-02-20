@@ -2405,4 +2405,34 @@ public final class QueleaProperties extends SortedProperties {
     public void setUseDarkTheme(boolean useDarkTheme) {
         setProperty(darkThemeKey, String.valueOf(useDarkTheme));
     }
+
+    /**
+     * Get whether NDI output is enabled or not
+     *
+     * @return true if NDI output is enabled, otherwise false
+     */
+    public boolean getEnableNDIOutput() {
+        return Boolean.parseBoolean(getProperty(enableNDIOutputKey, "false"));
+    }
+
+    /**
+     * Get the dimensions for the NDI output
+     *
+     * @return NDI output dimensions as string eg 1920x1080
+     */
+    public String getNDIDimensions() { return getProperty(ndiDimensionsKey, "1920x1080"); }
+
+    /**
+     * Get the NDI stage co-ordinates.
+     * <p>
+     *
+     * @return the co-ordinates.
+     */
+    public Bounds getNDICoords() {
+        String[] prop = getProperty(ndiDimensionsKey, "1920x1080").trim().split("x");
+        return new BoundingBox(0,
+                0,
+                Integer.parseInt(prop[0]),
+                Integer.parseInt(prop[1]));
+    }
 }

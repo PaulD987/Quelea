@@ -229,6 +229,7 @@ dependencies {
     compile group: 'javax.activation', name: 'activation', version: '1.1.1'
 
     compile group: 'com.dlsc.preferencesfx', name: 'preferencesfx-core', version: '8.4.3'
+    compile group: 'com.walker', name: 'devolay', version: '1.2.0'
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0'
@@ -237,6 +238,9 @@ dependencies {
 repositories {
     maven {
         url "http://maven.bestsolution.at/efxclipse-releases"
+    }
+    maven {
+        url  "https://dl.bintray.com/walkerknapp/devolay"
     }
 }
 

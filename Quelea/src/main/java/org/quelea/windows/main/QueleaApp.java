@@ -37,6 +37,7 @@ public class QueleaApp {
     private MainWindow mainWindow;
     private DisplayStage projectionWindow;
     private DisplayStage stageWindow;
+    private DisplayStage ndiWindow = null;
     private MobileLyricsServer mls;
     private RemoteControlServer rcs;
     private AutoDetectServer ads;
@@ -168,6 +169,22 @@ public class QueleaApp {
      */
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
+    }
+
+    /**
+     * Set the NDI window.
+     * @param ndiWindow the stage window.
+     */
+    public void setNDIWindow(DisplayStage ndiWindow) {
+        this.ndiWindow = ndiWindow;
+    }
+
+    /**
+     * Get the NDI window.
+     * @return the stage window.
+     */
+    public DisplayStage getNDIWindow() {
+        return ndiWindow;
     }
 
     public void setAutoDetectServer(AutoDetectServer ads) {
