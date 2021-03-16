@@ -259,6 +259,15 @@ public final class QueleaProperties extends SortedProperties {
     }
 
     /**
+     * Get the preview panel divider position property.
+     *
+     * @return the preview panel divider position property, or -1 if none is set.
+     */
+    public double getPreviewDivposKey() {
+        return Double.parseDouble(getProperty(previewDivposKey, "-1"));
+    }
+
+    /**
      * Set the main divider position property.
      *
      * @param val the position of the divider 0-1.
@@ -288,6 +297,15 @@ public final class QueleaProperties extends SortedProperties {
         write();
     }
 
+    /**
+     * Set the preview panel divider position property.
+     *
+     * @param val the position of the preview panel divider 0-1.
+     */
+    public void setPreviewDivPos(double val) {
+        setProperty(previewDivposKey, Double.toString(val));
+        write();
+    }
     /**
      * Set the library divider position property.
      *
@@ -756,6 +774,16 @@ public final class QueleaProperties extends SortedProperties {
      */
     public void setShowExtraLivePanelToolbarOptions(boolean show) {
         setProperty(showExtraLivePanelToolbarOptionsKey, Boolean.toString(show));
+    }
+
+    /**
+     * Get the setting for whether the preview and live dividers should be linked. eg move together
+     * <p>
+     *
+     * @return true if the preview and live dividers should be linked, else false
+     */
+    public boolean getLinkPreviewAndLiveDividers(){
+        return Boolean.parseBoolean(getProperty(linkPreviewAndLiveDividers, "true"));
     }
 
     /**
@@ -2346,6 +2374,58 @@ public final class QueleaProperties extends SortedProperties {
         return new File(getQueleaUserHome(), "notices");
     }
 
+    public String[] getNewSongKeys() {
+        return getProperty("new.song.keys", "Ctrl,Alt,N").split(",");
+    }
+
+    public String[] getSearchKeys() {
+        return getProperty("search.keys", "Ctrl,L").split(",");
+    }
+
+    public String[] getOptionsKeys() {
+        return getProperty("options.keys", "Shortcut,T").split(",");
+    }
+
+    public String[] getLiveTextKeys() {
+        return getProperty("live.text.keys", "Shortcut,Shift,L").split(",");
+    }
+
+    public String[] getLogoKeys() {
+        return getProperty("logo.keys", "F5").split(",");
+    }
+
+    public String[] getBlackKeys() {
+        return getProperty("black.keys", "F6").split(",");
+    }
+
+    public String[] getClearKeys() {
+        return getProperty("clear.keys", "F7").split(",");
+    }
+
+    public String[] getHideKeys() {
+        return getProperty("hide.keys", "F8").split(",");
+    }
+
+    public String[] getAdvanceKeys() {
+        return getProperty("advance.keys", "Page Down").split(",");
+    }
+
+    public String[] getPreviousKeys() {
+        return getProperty("previous.keys", "Page Up").split(",");
+    }
+
+    public String[] getNoticesKeys() {
+        return getProperty("notices.keys", "Ctrl,M").split(",");
+    }
+
+    public String[] getScheduleFocusKeys() {
+        return getProperty("schedule.focus.keys", "Ctrl,D").split(",");
+    }
+
+    public String[] getBibleFocusKeys() {
+        return getProperty("bible.focus.keys", "Ctrl,B").split(",");
+    }
+    
     /**
      * Set whether fade should be used.
      *
